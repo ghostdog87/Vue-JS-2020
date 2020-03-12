@@ -1,14 +1,14 @@
 <template>
   <div class="container">
     <div class="counter">
-      <h1>60</h1>
+      <h1>{{counter}}</h1>
     </div>
     <section class="memory-game">
       <div
         v-for="(card, index) in cardDeck"
         class="memory-card"
-        :class="[{'disable-card':namePair == true && (currentCardIndex == index || oldIndexCard == index)},
-        {flip: currentCardIndex == index || (namePair == true && oldIndexCard == index)}]"
+        :class="[{'disable-card' : cardActivity(index,card)},
+        {flip: currentCardIndex == index || (namePair == true && oldIndexCard == index) || pairedCards.includes(card)}]"
         :key="index"
         :data-framework="card"
         @click="cardFlip(card,index)"
@@ -23,6 +23,11 @@
 <script>
 export default {
   name: "cards",
+  mounted:function(){
+    return{
+      start: this.start()
+    }
+  },
   data: function() {
     return {
       cardNames: ["aurelia", "vue", "angular", "ember", "backbone", "react"],
@@ -30,28 +35,29 @@ export default {
       currentCardName: "",
       oldIndexCard: -1,
       indexPair: false,
-      namePair: false
+      namePair: false,
+      pairedCards: [],
+      counter: 60
     };
   },
   computed: {
     cardDeck: function() {
-      let newDeck = new Array();
+      let newDeck = [];
 
       for (let i = 0; i < this.cardNames.length; i++) {
         newDeck.push(this.cardNames[i]);
         newDeck.push(this.cardNames[i]);
       }
-
       return this.shuffle(newDeck);
-    },
-    cardActivity: function() {
-      return this.isPair() == false ? "" : "disable-card";
     }
-    
   },
   methods: {
-    isPair: function() {
-      if (this.indexPair == false && this.namePair == true){
+    cardActivity: function(index, card) {
+      var isActive =
+        this.namePair == true &&
+        (this.currentCardIndex == index || this.oldIndexCard == index);
+      if (isActive || this.pairedCards.includes(card)) {
+        this.isWon();
         return true;
       }
       return false;
@@ -59,6 +65,30 @@ export default {
     cardFlip(cardName, index) {
       this.currentCardIndex = index;
       this.currentCardName = cardName;
+      
+    },
+    start() {
+      this.interval = setInterval(() => {
+        this.counter--;
+      }, 1000);
+    },
+    isWon: function() {
+      if (this.pairedCards.length == this.cardNames.length) {
+        if (confirm("You won the game. Do you want to start a new one?")) {
+          this.resetGame();
+          return true;
+        }
+      }
+      return false;
+    },
+    resetGame(){
+      // TODO: Better solution for reset ?
+      // FIXME: Reset after last card shows.
+      this.counter = 60;
+      this.shuffle(this.cardDeck);
+      this.pairedCards = [];
+      this.currentCardIndex = -1;
+      this.currentCardName = "";
     },
     shuffle(array) {
       var currentIndex = array.length,
@@ -79,16 +109,26 @@ export default {
   },
   watch: {
     currentCardIndex: function(newIndex, oldIndex) {
-      if(newIndex != oldIndex && this.currentCardName == this.cardDeck[oldIndex]){
+      if (
+        newIndex != oldIndex &&
+        this.currentCardName == this.cardDeck[oldIndex]
+      ) {
         this.indexPair = true;
         this.namePair = true;
         this.oldIndexCard = oldIndex;
-        this.cardActivity();
+        this.pairedCards.push(this.currentCardName);
         return;
       }
       this.indexPair = false;
       this.namePair = false;
-    } 
+    },
+    counter: function(newValue) {
+      if (newValue === -1) {
+        if (confirm("You lost the game. Do you want to start a new one?")) {
+          this.resetGame();
+        }       
+      }
+    }
   }
 };
 </script>
