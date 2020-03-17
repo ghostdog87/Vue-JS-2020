@@ -33,7 +33,7 @@ export default {
       if(this.resetGame){
         // TODO: Better solution for reset ?
         // FIXME: Reset after last card shows.
-        this.counter = 10;
+        this.counter = 30;
         this.shuffle(this.cardDeck);
         this.pairedCards = [];
         this.currentCardIndex = -1;
@@ -51,7 +51,7 @@ export default {
       indexPair: false,
       namePair: false,
       pairedCards: [],
-      counter: 10,
+      counter: 30,
       resetGame: false,
     };
   },
