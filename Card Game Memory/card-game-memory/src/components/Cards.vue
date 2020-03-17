@@ -31,8 +31,8 @@ export default {
   updated: function() {
     this.$nextTick(function() {
       if(this.resetGame){
-        // TODO: Better solution for reset ?
-        // FIXME: Reset after last card shows.
+        // TODO: Better solution to reset game?
+        // FIXME: Reset after last card shows up.
         this.counter = 30;
         this.shuffle(this.cardDeck);
         this.pairedCards = [];
