@@ -12,7 +12,6 @@
         {flip: isFlipped(index,card)}]"
         :key="index"
         :data-framework="card"
-        
       >
         <img class="front-face" :src="'img/'+card+'.svg'" :alt="card" />
         <img class="back-face" src="img/js-badge.svg" alt="JS Badge" />
@@ -29,11 +28,11 @@ export default {
       start: this.start()
     };
   },
-  
+
   updated: function() {
     this.$nextTick(function() {
-      if(this.isGameOver){
-        // TODO: Better solution to reset game?
+      if (this.isGameOver) {
+        // TODO: Better solution to reset game/component?
         // TODO: Reset after last card shows up.
         this.counter = 30;
         this.shuffle(this.cardDeck);
@@ -53,7 +52,7 @@ export default {
       pairedCards: [],
       counter: 30,
       isNamePair: false,
-      isGameOver: false,
+      isGameOver: false
     };
   },
   computed: {
@@ -68,7 +67,7 @@ export default {
     }
   },
   methods: {
-    cardActivity(index, card){
+    cardActivity(index, card) {
       var isActive =
         this.isNamePair == true &&
         (this.currentCardIndex == index || this.oldCardIndex == index);
@@ -86,7 +85,7 @@ export default {
         this.currentCardIndex == index ||
         (this.isNamePair == true && this.oldCardIndex == index) ||
         this.pairedCards.includes(card);
-       
+
       return isFlipped;
     },
     start() {
@@ -132,7 +131,7 @@ export default {
       }
     },
     pairedCards: function(newValue) {
-      if(newValue.length == this.cardNames.length){
+      if (newValue.length == this.cardNames.length) {
         if (confirm("You won the game. Do you want to start a new one?")) {
           this.isGameOver = true;
         }
